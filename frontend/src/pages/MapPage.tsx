@@ -1,9 +1,12 @@
 import { MapView } from "../components/MapView";
+import { useSpots } from "../hooks/useSpots";
 
 const MapPage = () => {
+  const { data: spots } = useSpots();
+
   return (
     <div className="h-screen w-screen">
-      <MapView />
+      <MapView spots={spots} />
     </div>
   );
 };

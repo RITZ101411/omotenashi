@@ -1,13 +1,21 @@
-import { useState } from 'react';
-import { Map } from '@vis.gl/react-maplibre';
+import { useEffect, useState } from 'react';
+import { Map, Marker } from '@vis.gl/react-maplibre';
+import { useGeolocation } from '../hooks/useGeolocation';
+import type { Spot } from '../types/spot';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-export const MapView = () => {
-  const [viewState, setViewState] = useState({
-    latitude: 35.681236,
-    longitude: 139.767125,
-    zoom: 14,
-  });
+type MapViewProps = {
+  spots: Spot[];
+  onSpotClick?: (spot: Spot) => void;
+};
+
+export const MapView = ({ spots, onSpotClick }: MapViewProps) => {
+  const [viewState, setViewState] = useState({ zoom: 14 });
+  const { latitude, longitude } = useGeolocation();
+
+  useEffect(() => {
+    setViewState((prev) => ({ ...prev, latitude, longitude }));
+  }, [latitude, longitude]);
 
   return (
     <Map
@@ -15,6 +23,15 @@ export const MapView = () => {
       onMove={(evt) => setViewState(evt.viewState)}
       style={{ width: '100%', height: '100%' }}
       mapStyle="https://tiles.openfreemap.org/styles/bright"
-    />
+    >
+      {spots.map((spot) => (
+        <Marker
+          key={spot.id}
+          latitude={spot.lat}
+          longitude={spot.lng}
+          onClick={() => onSpotClick?.(spot)}
+        />
+      ))}
+    </Map>
   );
 };
