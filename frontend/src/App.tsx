@@ -1,9 +1,7 @@
+import SpotPostPage from "./pages/SpotPostPage";
+
 function App() {
-  return (
-    <div>
-      <h1>表無し</h1>
-    </div>
-  )
+  return <SpotPostPage />;
 }
 
 export default App
