@@ -1,4 +1,22 @@
+import { useState } from "react";
+
 function SpotPostForm() {
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [photoUrl, setPhotoUrl] = useState("");
+    const [lat, setLat] = useState("");
+    const [lng, setLng] = useState("");
+
+    const handleSubmit = () => {
+        const spot = {
+            name,
+            description,
+            photo_url: photoUrl,
+            lat: Number(lat),
+            lng: Number(lng),
+        };
+        console.log(JSON.stringify(spot, null, 2));
+    };
     return (
         <div className="mx-auto max-w-xl rounded-3xl bg-white p-8 shadow-xl border border-slate-200">
             <h1 className="mb-2 text-3xl font-bold text-slate-800 text-center">
@@ -16,6 +34,8 @@ function SpotPostForm() {
                 </label>
 
                 <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     type="text"
                     placeholder="例：地元民御用達の立ち飲み屋"
                     className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-500 focus:outline-none"
@@ -29,6 +49,8 @@ function SpotPostForm() {
                 </label>
 
                 <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     rows={5}
                     placeholder="このスポットの魅力を書いてください"
                     className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-500 focus:outline-none"
@@ -42,6 +64,8 @@ function SpotPostForm() {
                 </label>
 
                 <input
+                    value={photoUrl}
+                    onChange={(e) => setPhotoUrl(e.target.value)}
                     type="url"
                     placeholder="https://example.com/photo.jpg"
                     className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-500 focus:outline-none"
@@ -56,6 +80,8 @@ function SpotPostForm() {
                     </label>
 
                     <input
+                        value={lat}
+                        onChange={(e) => setLat(e.target.value)}
                         type="number"
                         placeholder="35.5325"
                         className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-500 focus:outline-none"
@@ -69,6 +95,8 @@ function SpotPostForm() {
                     </label>
 
                     <input
+                        value={lng}
+                        onChange={(e) => setLng(e.target.value)}
                         type="number"
                         placeholder="139.7008"
                         className="w-full rounded-xl border border-slate-300 p-3 focus:border-blue-500 focus:outline-none"
@@ -77,6 +105,7 @@ function SpotPostForm() {
             </div>
 
             <button
+                onClick={handleSubmit}
                 className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl active:scale-95">
                 投稿する
             </button>
