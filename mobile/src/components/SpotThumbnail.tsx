@@ -13,7 +13,7 @@ export function SpotThumbnail({ photo_url, name, state }: Props) {
 
   return (
     <View className="items-center">
-      <View className={`${size} ${shadow} rounded-xl overflow-hidden bg-gray-100`}>
+      <View className={`${size} ${shadow} rounded-xl overflow-hidden bg-gray-100 border-2 border-white`}>
         <Image
           source={{ uri: photo_url ?? "https://placehold.co/80x80" }}
           className="w-full h-full"
