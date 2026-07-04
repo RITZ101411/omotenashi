@@ -2,7 +2,7 @@ export type Spot = {
   id: number;
   name: string;
   description: string;
-  photo_url: string | null;
+  photo_url: string;
   lat: number;
   lng: number;
   created_at: string;
