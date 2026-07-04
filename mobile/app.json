@@ -2,13 +2,14 @@
   "expo": {
     "name": "mobile",
     "slug": "mobile",
+    "scheme": "omotenashi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ritz101411.omotenashi"
+      "bundleIdentifier": "com.kawappiramochi.omotenashi"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,14 +18,16 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.kawappiramochi.omotenashi"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@maplibre/maplibre-react-native"
     ]
   }
 }
