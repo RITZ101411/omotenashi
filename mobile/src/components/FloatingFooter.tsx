@@ -14,11 +14,11 @@ export function FloatingFooter({ active, onTabPress }: Props) {
       <View className="flex-row bg-purple-600 rounded-[28px] items-center px-2 py-2">
         <Pressable
           onPress={() => onTabPress("map")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "map" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "map" ? "bg-purple-500" : ""}`}
           style={{ height: 48 }}
         >
-          <Map size={16} color={active === "map" ? "#111" : "#c4b5fd"} />
-          <Text className={`text-sm font-bold ${active === "map" ? "text-gray-900" : "text-purple-200"}`}>
+          <Map size={16} color={active === "map" ? "white" : "#c4b5fd"} />
+          <Text className={`text-sm font-bold ${active === "map" ? "text-white" : "text-purple-200"}`}>
             地図
           </Text>
         </Pressable>
@@ -33,11 +33,11 @@ export function FloatingFooter({ active, onTabPress }: Props) {
 
         <Pressable
           onPress={() => onTabPress("mypage")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "mypage" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "mypage" ? "bg-purple-500" : ""}`}
           style={{ height: 48 }}
         >
-          <User size={16} color={active === "mypage" ? "#111" : "#c4b5fd"} />
-          <Text className={`text-sm font-bold ${active === "mypage" ? "text-gray-900" : "text-purple-200"}`}>
+          <User size={16} color={active === "mypage" ? "white" : "#c4b5fd"} />
+          <Text className={`text-sm font-bold ${active === "mypage" ? "text-white" : "text-purple-200"}`}>
             マイページ
           </Text>
         </Pressable>
