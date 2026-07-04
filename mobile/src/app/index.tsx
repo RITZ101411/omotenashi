@@ -3,13 +3,13 @@ import { router } from "expo-router";
 
 export default function MapScreen() {
   return (
-    <View className="flex-1 items-center justify-center">
-      <Text className="text-lg font-bold mb-4">地図画面</Text>
+    <View className="flex-1 items-center justify-center gap-4">
+      <Text className="text-lg font-bold">地図画面（仮）</Text>
       <Pressable
-        onPress={() => router.push("/components-demo")}
-        className="bg-gray-100 rounded-full px-4 py-2 active:bg-gray-200"
+        onPress={() => router.push("/spot/camera")}
+        className="bg-purple-500 rounded-full px-6 py-3"
       >
-        <Text className="text-sm font-medium text-gray-600">コンポーネント一覧</Text>
+        <Text className="text-white font-bold">足あとを残す</Text>
       </Pressable>
     </View>
   );
