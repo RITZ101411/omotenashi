@@ -59,23 +59,6 @@ export default function MypageScreen() {
             </View>
           ))}
         </View>
-
-        {/* 投稿したスポット */}
-        <View>
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-base font-bold text-gray-900">投稿したスポット</Text>
-            <Text className="text-xs text-gray-400">{myPosts.length}件</Text>
-          </View>
-          <View className="gap-2">
-            {myPosts.map((spot) => (
-              <SpotCard
-                key={spot.id}
-                spot={spot}
-                onPress={() => router.push(`/spot/${spot.id}`)}
-              />
-            ))}
-          </View>
-        </View>
       </ScrollView>
 
       <FloatingFooter
