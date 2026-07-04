@@ -16,7 +16,7 @@ const user = {
 export default function MypageScreen() {
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-5 pt-16" contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView className="flex-1 px-5 pt-24" contentContainerStyle={{ paddingBottom: 120 }}>
         {/* プロフィール */}
         <View className="items-center mb-8">
           <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
