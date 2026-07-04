@@ -2,12 +2,14 @@
   "expo": {
     "name": "mobile",
     "slug": "mobile",
+    "scheme": "omotenashi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ta9to.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +25,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@maplibre/maplibre-react-native"
     ]
   }
 }
