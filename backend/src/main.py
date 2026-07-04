@@ -1,10 +1,18 @@
-import json
-from datetime import datetime, timezone
-from pathlib import Path
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from .database import get_session, create_db_and_tables
+from .models import Spot, SpotCreate, SpotRead, Stamp, StampCreate, StampRead
+
+
+class UserMe(BaseModel):
+    id: str
+    display_name: str
+    exploration_rate: float
+    stamped_count: int
+    total_spots: int
 
 app = FastAPI(title="表無し API")
 
@@ -15,28 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DUMMY_SPOTS_PATH = Path(__file__).resolve().parents[2] / "shared" / "dummy-spots.json"
 
-with DUMMY_SPOTS_PATH.open(encoding="utf-8") as f:
-    spots: list[dict] = json.load(f)
-
-
-class Spot(BaseModel):
-    id: int
-    name: str
-    description: str
-    photo_url: str | None = None
-    lat: float
-    lng: float
-    created_at: str
-
-
-class SpotCreate(BaseModel):
-    name: str
-    description: str
-    photo_url: str | None = None
-    lat: float
-    lng: float
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 
 @app.get("/health")
@@ -44,26 +34,61 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/spots", response_model=list[Spot])
-def list_spots():
+@app.get("/users/me", response_model=UserMe)
+def get_current_user():
+    return UserMe(
+        id="anonymous-user-1",
+        display_name="テストユーザー",
+        exploration_rate=37.5,
+        stamped_count=3,
+        total_spots=8,
+    )
+
+
+@app.get("/spots", response_model=list[SpotRead])
+def list_spots(session: Session = Depends(get_session)):
+    spots = session.exec(select(Spot)).all()
     return spots
 
 
-@app.get("/spots/{spot_id}", response_model=Spot)
-def get_spot(spot_id: int):
-    for spot in spots:
-        if spot["id"] == spot_id:
-            return spot
-    raise HTTPException(status_code=404, detail="Spot not found")
+@app.get("/spots/{spot_id}", response_model=SpotRead)
+def get_spot(spot_id: int, session: Session = Depends(get_session)):
+    spot = session.get(Spot, spot_id)
+    if not spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+    return spot
 
 
-@app.post("/spots", response_model=Spot, status_code=201)
-def create_spot(spot: SpotCreate):
-    new_id = max((s["id"] for s in spots), default=0) + 1
-    new_spot = {
-        "id": new_id,
-        **spot.model_dump(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    spots.append(new_spot)
-    return new_spot
+@app.post("/spots", response_model=SpotRead, status_code=201)
+def create_spot(spot_data: SpotCreate, session: Session = Depends(get_session)):
+    spot = Spot.model_validate(spot_data)
+    session.add(spot)
+    session.commit()
+    session.refresh(spot)
+    return spot
+
+
+@app.post("/spots/{spot_id}/stamp", response_model=StampRead, status_code=201)
+def stamp_spot(
+    spot_id: int,
+    stamp_data: StampCreate,
+    session: Session = Depends(get_session),
+):
+    # TODO: 認証実装後は stamp_data.user_id ではなく JWT から取得した user_id を使う
+    user_id = stamp_data.user_id
+
+    spot = session.get(Spot, spot_id)
+    if not spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+
+    existing = session.exec(
+        select(Stamp).where(Stamp.user_id == user_id, Stamp.spot_id == spot_id)
+    ).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Already stamped")
+
+    stamp = Stamp(user_id=user_id, spot_id=spot_id)
+    session.add(stamp)
+    session.commit()
+    session.refresh(stamp)
+    return stamp
