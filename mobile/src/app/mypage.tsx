@@ -1,10 +1,10 @@
 import { View, Text } from "react-native";
 
-// メイン画面（地図）
-export default function MapScreen() {
+// マイページ
+export default function MypageScreen() {
   return (
     <View className="flex-1 items-center justify-center">
-      <Text>地図画面</Text>
+      <Text>マイページ</Text>
     </View>
   );
 }

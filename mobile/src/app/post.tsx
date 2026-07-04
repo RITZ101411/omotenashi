@@ -1,10 +1,10 @@
 import { View, Text } from "react-native";
 
-// メイン画面（地図）
-export default function MapScreen() {
+// 投稿画面（ピン設置）
+export default function PostScreen() {
   return (
     <View className="flex-1 items-center justify-center">
-      <Text>地図画面</Text>
+      <Text>投稿画面（ピン設置）</Text>
     </View>
   );
 }
