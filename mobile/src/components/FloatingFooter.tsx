@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { Map, Plus, User } from "lucide-react-native";
+import { Map, MapPin, User } from "lucide-react-native";
 
 type Tab = "map" | "post" | "mypage";
 
@@ -26,7 +26,7 @@ export function FloatingFooter({ active, onTabPress }: Props) {
           onPress={() => onTabPress("post")}
           className="w-12 h-12 bg-white rounded-full items-center justify-center mx-2"
         >
-          <Plus size={22} color="black" />
+          <MapPin size={22} color="black" />
         </Pressable>
 
         <Pressable
