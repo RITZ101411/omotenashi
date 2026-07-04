@@ -1,4 +1,5 @@
 import { View, Image, Text } from "react-native";
+import { Footprints } from "lucide-react-native";
 
 type Props = {
   photo_url: string | null;
@@ -19,7 +20,7 @@ export function SpotThumbnail({ photo_url, name, state }: Props) {
         />
         {state === "visited" && (
           <View className="absolute inset-0 bg-black/40 items-center justify-center rounded-xl">
-            <Text className="text-white text-sm">👣</Text>
+            <Footprints size={16} color="white" />
           </View>
         )}
       </View>
