@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ta9to.mobile"
+      "bundleIdentifier": "com.kawappiramochi.omotenashi"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +18,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.kawappiramochi.omotenashi"
     },
     "web": {
       "favicon": "./assets/favicon.png"
