@@ -21,7 +21,7 @@ export default function MypageScreen() {
         <View className="items-center mb-8">
           <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
             <Image
-              source={{ uri: "https://placehold.co/160x160" }}
+              source={{ uri: "https://api.dicebear.com/9.x/avataaars/png?seed=jimoto" }}
               className="w-full h-full"
             />
           </View>
