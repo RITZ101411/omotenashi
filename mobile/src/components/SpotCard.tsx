@@ -11,11 +11,11 @@ export function SpotCard({ spot, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 bg-purple-50 rounded-3xl p-4 active:bg-purple-100"
+      className="flex-row items-center gap-3 bg-gray-50 rounded-3xl p-4 active:bg-gray-100"
     >
       <Image
         source={{ uri: spot.photo_url ?? "https://placehold.co/80x80" }}
-        className="w-13 h-13 rounded-2xl bg-purple-100"
+        className="rounded-2xl bg-gray-200"
         style={{ width: 52, height: 52 }}
       />
       <View className="flex-1">
@@ -24,7 +24,7 @@ export function SpotCard({ spot, onPress }: Props) {
           {spot.description}
         </Text>
       </View>
-      <ChevronRight size={18} color="#a855f7" />
+      <ChevronRight size={18} color="#d1d5db" />
     </Pressable>
   );
 }

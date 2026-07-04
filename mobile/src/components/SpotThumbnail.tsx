@@ -13,13 +13,13 @@ export function SpotThumbnail({ photo_url, name, state }: Props) {
 
   return (
     <View className="items-center">
-      <View className={`${size} rounded-2xl overflow-hidden bg-purple-100 border-[3px] ${borderColor}`}>
+      <View className={`${size} rounded-2xl overflow-hidden bg-gray-100 border-[3px] ${borderColor}`}>
         <Image
           source={{ uri: photo_url ?? "https://placehold.co/80x80" }}
           className="w-full h-full"
         />
         {state === "visited" && (
-          <View className="absolute inset-0 bg-purple-900/50 items-center justify-center">
+          <View className="absolute inset-0 bg-black/40 items-center justify-center">
             <Footprints size={18} color="white" />
           </View>
         )}

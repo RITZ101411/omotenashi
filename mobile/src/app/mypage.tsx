@@ -19,7 +19,7 @@ export default function MypageScreen() {
       <ScrollView className="flex-1 px-5 pt-16" contentContainerStyle={{ paddingBottom: 120 }}>
         {/* プロフィール */}
         <View className="items-center mb-8">
-          <View className="w-20 h-20 rounded-full overflow-hidden border-4 border-purple-200 mb-3">
+          <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
             <Image
               source={{ uri: "https://placehold.co/160x160" }}
               className="w-full h-full"
@@ -47,9 +47,9 @@ export default function MypageScreen() {
             { label: "足あと", value: user.footprintCount },
             { label: "訪問地", value: user.visitCount },
           ].map((stat) => (
-            <View key={stat.label} className="flex-1 bg-purple-50 rounded-3xl p-4 items-center">
-              <Text className="text-2xl font-black text-purple-600">{stat.value}</Text>
-              <Text className="text-xs font-medium text-purple-400 mt-1">{stat.label}</Text>
+            <View key={stat.label} className="flex-1 bg-gray-50 rounded-3xl p-4 items-center">
+              <Text className="text-2xl font-black text-gray-900">{stat.value}</Text>
+              <Text className="text-xs font-medium text-gray-400 mt-1">{stat.label}</Text>
             </View>
           ))}
         </View>
