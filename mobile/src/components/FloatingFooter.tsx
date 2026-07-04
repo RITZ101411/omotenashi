@@ -25,10 +25,10 @@ export function FloatingFooter({ active, onTabPress }: Props) {
 
         <Pressable
           onPress={() => onTabPress("post")}
-          className={`rounded-[22px] items-center justify-center mx-2 ${active === "post" ? "bg-white" : "bg-purple-400"}`}
-          style={{ width: 48, height: 48 }}
+          className={`rounded-full items-center justify-center mx-2 -mt-6 ${active === "post" ? "bg-white" : "bg-purple-400"}`}
+          style={{ width: 60, height: 60 }}
         >
-          <MapPin size={20} color={active === "post" ? "#7c3aed" : "white"} />
+          <MapPin size={24} color={active === "post" ? "#7c3aed" : "white"} />
         </Pressable>
 
         <Pressable
