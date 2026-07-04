@@ -14,10 +14,11 @@ export function FloatingFooter({ active, onTabPress }: Props) {
       <View className="flex-row bg-gray-900 rounded-[28px] items-center px-2 py-2">
         <Pressable
           onPress={() => onTabPress("map")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-[22px] ${active === "map" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "map" ? "bg-white" : ""}`}
+          style={{ height: 48 }}
         >
-          <Map size={14} color={active === "map" ? "#111" : "#9ca3af"} />
-          <Text className={`text-xs font-bold ${active === "map" ? "text-gray-900" : "text-gray-400"}`}>
+          <Map size={16} color={active === "map" ? "#111" : "#9ca3af"} />
+          <Text className={`text-sm font-bold ${active === "map" ? "text-gray-900" : "text-gray-400"}`}>
             地図
           </Text>
         </Pressable>
@@ -25,17 +26,18 @@ export function FloatingFooter({ active, onTabPress }: Props) {
         <Pressable
           onPress={() => onTabPress("post")}
           className="bg-purple-500 rounded-[22px] items-center justify-center mx-2"
-          style={{ width: 52, height: 52 }}
+          style={{ width: 48, height: 48 }}
         >
-          <MapPin size={22} color="white" />
+          <MapPin size={20} color="white" />
         </Pressable>
 
         <Pressable
           onPress={() => onTabPress("mypage")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-[22px] ${active === "mypage" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-[22px] ${active === "mypage" ? "bg-white" : ""}`}
+          style={{ height: 48 }}
         >
-          <User size={14} color={active === "mypage" ? "#111" : "#9ca3af"} />
-          <Text className={`text-xs font-bold ${active === "mypage" ? "text-gray-900" : "text-gray-400"}`}>
+          <User size={16} color={active === "mypage" ? "#111" : "#9ca3af"} />
+          <Text className={`text-sm font-bold ${active === "mypage" ? "text-gray-900" : "text-gray-400"}`}>
             マイページ
           </Text>
         </Pressable>
