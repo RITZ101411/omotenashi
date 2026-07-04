@@ -11,10 +11,10 @@ type Props = {
 export function FloatingFooter({ active, onTabPress }: Props) {
   return (
     <View className="absolute bottom-8 left-5 right-5">
-      <View className="flex-row bg-gray-900 rounded-full items-center px-2 py-1.5">
+      <View className="flex-row bg-gray-900 rounded-[28px] items-center px-2 py-2">
         <Pressable
           onPress={() => onTabPress("map")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-full ${active === "map" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-[22px] ${active === "map" ? "bg-white" : ""}`}
         >
           <Map size={14} color={active === "map" ? "#111" : "#9ca3af"} />
           <Text className={`text-xs font-bold ${active === "map" ? "text-gray-900" : "text-gray-400"}`}>
@@ -24,7 +24,7 @@ export function FloatingFooter({ active, onTabPress }: Props) {
 
         <Pressable
           onPress={() => onTabPress("post")}
-          className="bg-purple-500 rounded-full items-center justify-center mx-2"
+          className="bg-purple-500 rounded-[22px] items-center justify-center mx-2"
           style={{ width: 52, height: 52 }}
         >
           <MapPin size={22} color="white" />
@@ -32,7 +32,7 @@ export function FloatingFooter({ active, onTabPress }: Props) {
 
         <Pressable
           onPress={() => onTabPress("mypage")}
-          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-full ${active === "mypage" ? "bg-white" : ""}`}
+          className={`flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-[22px] ${active === "mypage" ? "bg-white" : ""}`}
         >
           <User size={14} color={active === "mypage" ? "#111" : "#9ca3af"} />
           <Text className={`text-xs font-bold ${active === "mypage" ? "text-gray-900" : "text-gray-400"}`}>
