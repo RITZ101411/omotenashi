@@ -8,25 +8,25 @@ type Props = {
 };
 
 export function SpotThumbnail({ photo_url, name, state }: Props) {
-  const size = state === "in-range" ? "w-14 h-14" : "w-10 h-10";
-  const shadow = state === "in-range" ? "shadow-lg" : "shadow-md";
+  const size = state === "in-range" ? "w-16 h-16" : "w-11 h-11";
+  const borderColor = state === "in-range" ? "border-purple-400" : "border-white";
 
   return (
     <View className="items-center">
-      <View className={`${size} ${shadow} rounded-xl overflow-hidden bg-gray-100 border-2 border-white`}>
+      <View className={`${size} rounded-2xl overflow-hidden bg-purple-100 border-[3px] ${borderColor}`}>
         <Image
           source={{ uri: photo_url ?? "https://placehold.co/80x80" }}
           className="w-full h-full"
         />
         {state === "visited" && (
-          <View className="absolute inset-0 bg-black/40 items-center justify-center rounded-xl">
-            <Footprints size={16} color="white" />
+          <View className="absolute inset-0 bg-purple-900/50 items-center justify-center">
+            <Footprints size={18} color="white" />
           </View>
         )}
       </View>
       {state === "in-range" && (
-        <View className="bg-black/80 rounded-full px-2 py-0.5 mt-1">
-          <Text className="text-[9px] text-white font-medium" numberOfLines={1}>{name}</Text>
+        <View className="bg-purple-600 rounded-full px-2.5 py-1 mt-1.5">
+          <Text className="text-[10px] text-white font-bold" numberOfLines={1}>{name}</Text>
         </View>
       )}
     </View>

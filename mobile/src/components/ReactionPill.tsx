@@ -10,11 +10,11 @@ export function ReactionPill({ label, selected = false, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className={`px-4 py-2 rounded-full ${
-        selected ? "bg-black" : "bg-gray-100 active:bg-gray-200"
+      className={`px-4 py-2.5 rounded-full ${
+        selected ? "bg-purple-600" : "bg-purple-50 active:bg-purple-100"
       }`}
     >
-      <Text className={`text-sm font-medium ${selected ? "text-white" : "text-gray-700"}`}>
+      <Text className={`text-sm font-bold ${selected ? "text-white" : "text-purple-700"}`}>
         {label}
       </Text>
     </Pressable>

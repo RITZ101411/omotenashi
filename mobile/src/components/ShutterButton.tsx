@@ -9,10 +9,10 @@ export function ShutterButton({ onPress }: Props) {
     <View className="items-center py-8">
       <Pressable
         onPress={onPress}
-        className="w-18 h-18 rounded-full border-4 border-white/80 items-center justify-center active:scale-95"
-        style={{ width: 72, height: 72 }}
+        className="rounded-full border-4 border-purple-300 items-center justify-center active:scale-95"
+        style={{ width: 76, height: 76 }}
       >
-        <View className="w-14 h-14 bg-white rounded-full" style={{ width: 56, height: 56 }} />
+        <View className="bg-purple-500 rounded-full" style={{ width: 60, height: 60 }} />
       </Pressable>
     </View>
   );

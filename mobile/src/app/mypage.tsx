@@ -1,8 +1,6 @@
-import { View, Text, ScrollView, Image, Pressable } from "react-native";
+import { View, Text, ScrollView, Image } from "react-native";
 import { router } from "expo-router";
-import { Star, ChevronRight } from "lucide-react-native";
-import { mockSpots } from "../data/mock-spots";
-import { SpotCard } from "../components/SpotCard";
+import { Star } from "lucide-react-native";
 import { ProgressBar } from "../components/ProgressBar";
 import { FloatingFooter } from "../components/FloatingFooter";
 
@@ -15,26 +13,22 @@ const user = {
   visitCount: 7,
 };
 
-const myPosts = mockSpots.slice(0, 3);
-
 export default function MypageScreen() {
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pt-16" contentContainerStyle={{ paddingBottom: 120 }}>
         {/* プロフィール */}
-        <View className="flex-row items-center gap-4 mb-8">
-          <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center">
+        <View className="items-center mb-8">
+          <View className="w-20 h-20 rounded-full overflow-hidden border-4 border-purple-200 mb-3">
             <Image
-              source={{ uri: "https://placehold.co/128x128" }}
-              className="w-full h-full rounded-full"
+              source={{ uri: "https://placehold.co/160x160" }}
+              className="w-full h-full"
             />
           </View>
-          <View className="flex-1">
-            <Text className="text-xl font-bold text-gray-900">{user.name}</Text>
-            <View className="flex-row items-center gap-1 mt-1">
-              <Star size={12} color="black" fill="black" />
-              <Text className="text-xs font-medium text-gray-600">{user.title}</Text>
-            </View>
+          <Text className="text-2xl font-black text-gray-900">{user.name}</Text>
+          <View className="flex-row items-center gap-1 bg-purple-100 rounded-full px-3 py-1 mt-2">
+            <Star size={12} color="#7c3aed" fill="#7c3aed" />
+            <Text className="text-xs font-bold text-purple-700">{user.title}</Text>
           </View>
         </View>
 
@@ -47,15 +41,15 @@ export default function MypageScreen() {
         </View>
 
         {/* 統計 */}
-        <View className="flex-row gap-3 mb-8">
+        <View className="flex-row gap-3">
           {[
             { label: "投稿数", value: user.postCount },
             { label: "足あと", value: user.footprintCount },
             { label: "訪問地", value: user.visitCount },
           ].map((stat) => (
-            <View key={stat.label} className="flex-1 bg-gray-50 rounded-2xl p-4 items-center">
-              <Text className="text-2xl font-bold text-gray-900">{stat.value}</Text>
-              <Text className="text-xs text-gray-500 mt-1">{stat.label}</Text>
+            <View key={stat.label} className="flex-1 bg-purple-50 rounded-3xl p-4 items-center">
+              <Text className="text-2xl font-black text-purple-600">{stat.value}</Text>
+              <Text className="text-xs font-medium text-purple-400 mt-1">{stat.label}</Text>
             </View>
           ))}
         </View>
