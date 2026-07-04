@@ -14,22 +14,23 @@ const user = {
 export default function MypageScreen() {
   return (
     <View className="flex-1 bg-white">
-      <ScrollView className="flex-1 px-5 pt-24" contentContainerStyle={{ paddingBottom: 120 }}>
-        {/* プロフィール */}
-        <View className="items-center mb-8">
-          <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
-            <Image
-              source={{ uri: "https://api.dicebear.com/9.x/avataaars/png?seed=jimoto" }}
-              className="w-full h-full"
-            />
-          </View>
-          <Text className="text-2xl font-black text-gray-900">{user.name}</Text>
-          <View className="flex-row items-center gap-1 bg-purple-100 rounded-full px-3 py-1 mt-2">
-            <Star size={12} color="#7c3aed" fill="#7c3aed" />
-            <Text className="text-xs font-bold text-purple-700">{user.title}</Text>
-          </View>
+      {/* 固定ヘッダー: プロフィール */}
+      <View className="px-5 pt-24 pb-6 items-center">
+        <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
+          <Image
+            source={{ uri: "https://api.dicebear.com/9.x/avataaars/png?seed=jimoto" }}
+            className="w-full h-full"
+          />
         </View>
+        <Text className="text-2xl font-black text-gray-900">{user.name}</Text>
+        <View className="flex-row items-center gap-1 bg-purple-100 rounded-full px-3 py-1 mt-2">
+          <Star size={12} color="#7c3aed" fill="#7c3aed" />
+          <Text className="text-xs font-bold text-purple-700">{user.title}</Text>
+        </View>
+      </View>
 
+      {/* スクロール部分 */}
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 120 }}>
         {/* 探索度 */}
         <View className="mb-6">
           <ProgressBar
