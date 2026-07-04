@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { useState, useRef } from "react";
 import { router } from "expo-router";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -10,6 +10,8 @@ export default function CameraScreen() {
   const cameraRef = useRef<CameraView>(null);
   const [capturing, setCapturing] = useState(false);
 
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+
   const takePicture = async () => {
     if (!cameraRef.current || capturing) return;
     setCapturing(true);
@@ -19,14 +21,25 @@ export default function CameraScreen() {
       base64: false,
     });
 
-    setCapturing(false);
+    setTimeout(() => {
+      setCapturing(false);
+      if (photo) {
+        setPhotoUri(photo.uri);
+      }
+    }, 200);
+  };
 
-    if (photo) {
+  const handleConfirm = () => {
+    if (photoUri) {
       router.push({
         pathname: "/spot/reaction",
-        params: { photoUri: photo.uri },
+        params: { photoUri },
       });
     }
+  };
+
+  const handleRetake = () => {
+    setPhotoUri(null);
   };
 
   if (!permission) return <View className="flex-1 bg-black" />;
@@ -43,6 +56,31 @@ export default function CameraScreen() {
         >
           <Text className="text-white font-bold">カメラを許可する</Text>
         </Pressable>
+      </View>
+    );
+  }
+
+  // 確認画面
+  if (photoUri) {
+    return (
+      <View className="flex-1 bg-black">
+        <View className="flex-1 items-center justify-center">
+          <Image source={{ uri: photoUri }} className="w-72 h-72 rounded-2xl" />
+        </View>
+        <View className="flex-row gap-4 px-8 pb-12">
+          <Pressable
+            onPress={handleRetake}
+            className="flex-1 h-14 bg-white/20 rounded-full items-center justify-center"
+          >
+            <Text className="text-white font-bold">撮り直す</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleConfirm}
+            className="flex-1 h-14 bg-purple-500 rounded-full items-center justify-center"
+          >
+            <Text className="text-white font-bold">この写真で決定</Text>
+          </Pressable>
+        </View>
       </View>
     );
   }
