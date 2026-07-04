@@ -23,9 +23,9 @@ export default function RootLayout() {
         <Stack.Screen name="post" />
         <Stack.Screen name="mypage" />
         <Stack.Screen name="spot/[id]" options={{ animation: "slide_from_bottom" }} />
-        <Stack.Screen name="spot/camera" options={{ presentation: "fullScreenModal" }} />
+        <Stack.Screen name="spot/camera" options={{ animation: "slide_from_bottom", animationDuration: 200 }} />
         <Stack.Screen name="spot/reaction" options={{ animation: "slide_from_right" }} />
-        <Stack.Screen name="spot/complete" options={{ animation: "fade" }} />
+        <Stack.Screen name="spot/complete" options={{ animation: "none" }} />
         <Stack.Screen name="components-demo" />
       </Stack>
 
