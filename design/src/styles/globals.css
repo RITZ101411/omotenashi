@@ -1,0 +1,18 @@
+@keyframes floating {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes stamp-drop {
+  0% { transform: scale(2) translateY(-30px); opacity: 0; }
+  60% { transform: scale(1.1) translateY(0px); opacity: 1; }
+  80% { transform: scale(0.95) translateY(2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0px); opacity: 1; }
+}
+
+@keyframes stamp-squish {
+  0%, 50% { transform: scale(1); }
+  70% { transform: scale(0.95) scaleY(0.92); }
+  85% { transform: scale(1.02) scaleY(1.01); }
+  100% { transform: scale(1) scaleY(1); }
+}
