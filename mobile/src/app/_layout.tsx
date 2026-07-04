@@ -36,6 +36,10 @@ export default function RootLayout() {
           name="spot/complete"
           options={{ href: null }}
         />
+        <Tabs.Screen
+          name="components-demo"
+          options={{ href: null }}
+        />
       </Tabs>
     </React.Fragment>
   );
