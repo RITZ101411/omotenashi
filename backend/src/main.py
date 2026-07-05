@@ -2,11 +2,20 @@ import math
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 
+from .auth import get_current_user_id
 from .database import get_session, create_db_and_tables
-from .models import Spot, SpotCreate, SpotRead, Stamp, StampCreate, StampRead
+from .models import (
+    Spot,
+    SpotCreate,
+    SpotRead,
+    Stamp,
+    StampCreate,
+    StampRead,
+    UserMe,
+    UserProfile,
+)
 
 # スタンプを許可するスポット中心からの半径(メートル)
 # docs/screens.md 「2. メイン画面」の現在地サークル半径(20m)に合わせる
@@ -31,13 +40,6 @@ def haversine_distance_meters(
     return EARTH_RADIUS_METERS * c
 
 
-class UserMe(BaseModel):
-    id: str
-    display_name: str
-    exploration_rate: float
-    stamped_count: int
-    total_spots: int
-
 app = FastAPI(title="表無し API")
 
 app.add_middleware(
@@ -59,13 +61,40 @@ def health():
 
 
 @app.get("/users/me", response_model=UserMe)
-def get_current_user():
+def get_current_user(
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    profile = session.get(UserProfile, user_id)
+    if not profile:
+        profile = UserProfile(
+            id=user_id,
+            display_name="user-" + user_id[:8],
+        )
+        session.add(profile)
+        session.commit()
+        session.refresh(profile)
+
+    stamped_count = session.exec(
+        select(func.count()).select_from(Stamp).where(Stamp.user_id == user_id)
+    ).one()
+    total_spots = session.exec(select(func.count()).select_from(Spot)).one()
+    post_count = session.exec(
+        select(func.count()).select_from(Spot).where(Spot.user_id == user_id)
+    ).one()
+
+    exploration_rate = (
+        0.0 if total_spots == 0 else stamped_count / total_spots * 100
+    )
+
     return UserMe(
-        id="anonymous-user-1",
-        display_name="テストユーザー",
-        exploration_rate=37.5,
-        stamped_count=3,
-        total_spots=8,
+        id=profile.id,
+        display_name=profile.display_name,
+        avatar_url=profile.avatar_url,
+        exploration_rate=exploration_rate,
+        stamped_count=stamped_count,
+        total_spots=total_spots,
+        post_count=post_count,
     )
 
 
@@ -84,8 +113,12 @@ def get_spot(spot_id: int, session: Session = Depends(get_session)):
 
 
 @app.post("/spots", response_model=SpotRead, status_code=201)
-def create_spot(spot_data: SpotCreate, session: Session = Depends(get_session)):
-    spot = Spot.model_validate(spot_data)
+def create_spot(
+    spot_data: SpotCreate,
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    spot = Spot.model_validate(spot_data, update={"user_id": user_id})
     session.add(spot)
     session.commit()
     session.refresh(spot)
@@ -96,11 +129,9 @@ def create_spot(spot_data: SpotCreate, session: Session = Depends(get_session)):
 def stamp_spot(
     spot_id: int,
     stamp_data: StampCreate,
+    user_id: str = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-    # TODO: 認証実装後は stamp_data.user_id ではなく JWT から取得した user_id を使う
-    user_id = stamp_data.user_id
-
     spot = session.get(Spot, spot_id)
     if not spot:
         raise HTTPException(status_code=404, detail="Spot not found")

@@ -4,8 +4,10 @@ version = "0.1.0"
 description = "表無し バックエンドAPI"
 requires-python = ">=3.14"
 dependencies = [
+    "cryptography>=49.0.0",
     "fastapi>=0.139.0",
     "psycopg2-binary>=2.9.12",
+    "pyjwt>=2.10.1",
     "python-dotenv>=1.2.2",
     "sqlmodel>=0.0.39",
     "uvicorn>=0.49.0",
