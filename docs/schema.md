@@ -22,6 +22,15 @@
 | spot_id | INTEGER | NOT NULL, FK → spots.id | 対象スポットID |
 | stamped_at | TIMESTAMP WITH TIME ZONE | DEFAULT now() | スタンプ日時 |
 
+## user_profiles テーブル
+
+| カラム | 型 | 制約 | 説明 |
+|--------|------|------|------|
+| id | UUID | PRIMARY KEY | Supabase Auth の user id（`sub`） |
+| display_name | VARCHAR | NOT NULL | 表示名 |
+| avatar_url | TEXT | NULLABLE | アバター画像URL |
+| created_at | TIMESTAMP WITH TIME ZONE | DEFAULT now() | 作成日時 |
+
 ---
 
 ## API レスポンス型
@@ -58,6 +67,8 @@
 
 ### POST /spots
 
+要 `Authorization: Bearer <access_token>`（Supabase Auth の JWT）。投稿者の user_id はトークンの `sub` から取得する。
+
 リクエストボディ:
 
 ```json
@@ -72,11 +83,12 @@
 
 ### POST /spots/{id}/stamp
 
+要 `Authorization: Bearer <access_token>`（Supabase Auth の JWT）。user_id はトークンの `sub` から取得する。
+
 リクエストボディ:
 
 ```json
 {
-  "user_id": "anonymous-user-1",
   "latitude": 35.6895,
   "longitude": 139.6917
 }
@@ -85,6 +97,7 @@
 - `latitude` / `longitude` はスタンプ判定用の現在地座標（DBには保存しない）
 - スポットの座標からの距離が `STAMP_ALLOWED_RADIUS_METERS`（20m。メイン画面の現在地サークル半径と同じ）を超える場合は 400/422 エラー
 - 対象スポットが存在しない場合は 404、既にスタンプ済みの場合は 409
+- 未認証の場合は 401
 
 レスポンス:
 

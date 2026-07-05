@@ -44,8 +44,6 @@ class Stamp(SQLModel, table=True):
 
 
 class StampCreate(SQLModel):
-    # TODO: 認証実装後は JWT から取得した user_id に差し替える想定
-    user_id: str
     latitude: float
     longitude: float
 
@@ -55,3 +53,29 @@ class StampRead(SQLModel):
     user_id: str
     spot_id: int
     stamped_at: datetime
+
+
+class UserProfile(SQLModel, table=True):
+    __tablename__ = "user_profiles"
+
+    id: str = Field(primary_key=True)
+    display_name: str
+    avatar_url: str | None = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class UserProfileRead(SQLModel):
+    id: str
+    display_name: str
+    avatar_url: str | None = None
+    created_at: datetime
+
+
+class UserMe(SQLModel):
+    id: str
+    display_name: str
+    avatar_url: str | None = None
+    exploration_rate: float
+    stamped_count: int
+    total_spots: int
+    post_count: int
