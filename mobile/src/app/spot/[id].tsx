@@ -6,43 +6,31 @@ import {
   ScrollView,
   Animated,
   PanResponder,
-  Dimensions,
 } from "react-native";
 import { useRef } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { Footprints } from "lucide-react-native";
 import { mockSpots } from "../../data/mock-spots";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
+const DISMISS_DISTANCE = 120;
+const DISMISS_VELOCITY = 0.8;
 
 export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const spot = mockSpots.find((s) => String(s.id) === id);
 
-  // シートの縦位置（ドラッグで閉じる用）
   const translateY = useRef(new Animated.Value(0)).current;
 
-  const dismiss = () => {
-    Animated.timing(translateY, {
-      toValue: SCREEN_HEIGHT,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => router.back());
-  };
-
-  // 画像＋ヘッダー領域だけに付けるドラッグ判定（ScrollView/ボタンには付けない）
   const panResponder = useRef(
     PanResponder.create({
-      // 下方向のドラッグのときだけ反応（横スワイプ・タップは無視）
       onMoveShouldSetPanResponder: (_, g) =>
         g.dy > 6 && Math.abs(g.dy) > Math.abs(g.dx),
       onPanResponderMove: (_, g) => {
         if (g.dy > 0) translateY.setValue(g.dy);
       },
       onPanResponderRelease: (_, g) => {
-        // 十分下に投げたら閉じる。そうでなければ元に戻す
-        if (g.dy > 120 || g.vy > 0.8) {
-          dismiss();
+        if (g.dy > DISMISS_DISTANCE || g.vy > DISMISS_VELOCITY) {
+          router.back();
         } else {
           Animated.spring(translateY, {
             toValue: 0,
@@ -68,7 +56,6 @@ export default function SpotDetailScreen() {
     avatar: `https://api.dicebear.com/9.x/avataaars/png?seed=spot${spot.id}`,
   };
 
-  // シートを閉じてからカメラフローへ（rootスタックに乗せ、以降の画面がボトムシート化するのを防ぐ）
   const startFootprint = () => {
     router.back();
     router.push("/spot/camera");
@@ -82,7 +69,6 @@ export default function SpotDetailScreen() {
         className="flex-1 bg-white rounded-t-3xl overflow-hidden"
         style={{ transform: [{ translateY }] }}
       >
-        {/* ドラッグで閉じられる領域（画像＋ヘッダーのみ） */}
         <View {...panResponder.panHandlers}>
           <View className="w-full aspect-square bg-gray-100">
             <Image
@@ -106,7 +92,6 @@ export default function SpotDetailScreen() {
           <Text className="text-sm text-gray-800 leading-6">{spot.description}</Text>
         </ScrollView>
 
-        {/* 投稿者カード（説明の高さに依存せず、常にボタンの上に固定） */}
         <View className="px-5 pb-8">
           <View className="flex-row items-center gap-3 rounded-2xl border border-black p-2.5">
             <View className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
