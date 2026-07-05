@@ -25,6 +25,10 @@ function RootLayoutInner() {
     return <Redirect href="/auth" />;
   }
 
+  if (session && pathname === "/auth") {
+    return <Redirect href="/" />;
+  }
+
   const showFooter = !HIDE_FOOTER_ROUTES.includes(pathname) && !pathname.startsWith("/spot/");
   const activeTab = pathname === "/mypage" ? "mypage" : pathname === "/post" ? "post" : "map";
 
