@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { Stack, usePathname, useRouter } from "expo-router";
 import "../../global.css";
-import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { FloatingFooter } from "../components/FloatingFooter";
 
@@ -22,7 +21,10 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="post" />
         <Stack.Screen name="mypage" />
-        <Stack.Screen name="spot/[id]" options={{ animation: "slide_from_bottom" }} />
+        <Stack.Screen
+          name="spot/[id]"
+          options={{ presentation: "transparentModal", animation: "slide_from_bottom" }}
+        />
         <Stack.Screen name="spot/camera" options={{ animation: "slide_from_bottom", animationDuration: 200 }} />
         <Stack.Screen name="spot/reaction" options={{ animation: "slide_from_right" }} />
         <Stack.Screen name="spot/complete" options={{ animation: "none" }} />

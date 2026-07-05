@@ -31,13 +31,6 @@ export default function MapScreen() {
       >
         <Text className="text-sm font-medium text-gray-600">コンポーネント一覧</Text>
       </Pressable>
-
-      <Pressable
-        onPress={() => router.push("/spot/camera")}
-        className="absolute bottom-28 self-center bg-purple-500 rounded-full px-6 py-3 shadow active:bg-purple-600"
-      >
-        <Text className="text-white font-bold">足あとを残す</Text>
-      </Pressable>
     </View>
   );
 }
