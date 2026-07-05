@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { Star, LogOut } from "lucide-react-native";
+import { Star, LogOut, Bell } from "lucide-react-native";
 import { useEffect, useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 import { ProgressBar } from "../components/ProgressBar";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../providers/AuthProvider";
@@ -87,6 +87,13 @@ export default function MypageScreen() {
     <View className="flex-1 bg-white">
       {/* 固定ヘッダー: プロフィール */}
       <View className="px-5 pt-24 pb-6 items-center">
+        <TouchableOpacity
+          className="absolute top-14 right-16 p-2"
+          onPress={() => router.push("/notifications")}
+        >
+          <Bell size={22} color="#6b7280" />
+        </TouchableOpacity>
+
         <TouchableOpacity
           className="absolute top-14 right-5 p-2"
           onPress={handleLogout}
