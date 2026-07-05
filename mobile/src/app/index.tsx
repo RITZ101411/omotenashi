@@ -1,11 +1,13 @@
 import { View, Pressable, Text } from "react-native";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   Map,
   Camera,
   Marker,
   GeoJSONSource,
   Layer,
+  type CameraRef,
+  type LngLat,
 } from "@maplibre/maplibre-react-native";
 import { router } from "expo-router";
 import { mockSpots } from "../data/mock-spots";
@@ -19,6 +21,16 @@ const INITIAL_ZOOM = 14;
 
 export default function MapScreen() {
   const { coords } = useUserLocation();
+  const cameraRef = useRef<CameraRef>(null);
+  const initializedCamera = useRef(false);
+
+  useEffect(() => {
+    if (!coords || initializedCamera.current) return;
+
+    const center: LngLat = [coords.longitude, coords.latitude];
+    cameraRef.current?.jumpTo({ center, zoom: INITIAL_ZOOM });
+    initializedCamera.current = true;
+  }, [coords]);
 
   // 範囲内のマーカーを揺らす
   const nearbySpotIds = useMemo(() => {
@@ -48,6 +60,7 @@ export default function MapScreen() {
     <View className="flex-1">
       <Map style={{ flex: 1 }} mapStyle={"https://tiles.openfreemap.org/styles/bright"}>
         <Camera
+          ref={cameraRef}
           initialViewState={{ center: INITIAL_CENTER, zoom: INITIAL_ZOOM }}
           trackUserLocation="default"
         />
