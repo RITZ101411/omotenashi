@@ -11,6 +11,9 @@ import { useRef } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { Footprints } from "lucide-react-native";
 import { mockSpots } from "../../data/mock-spots";
+import { useUserLocation } from "../../hooks/useUserLocation";
+import { distanceMeters } from "../../lib/geo";
+import { NEARBY_RADIUS_M } from "../../lib/nearby";
 
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 0.8;
@@ -19,6 +22,7 @@ export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const spot = mockSpots.find((s) => String(s.id) === id);
 
+  const { coords } = useUserLocation();
   const translateY = useRef(new Animated.Value(0)).current;
 
   const panResponder = useRef(
@@ -55,6 +59,12 @@ export default function SpotDetailScreen() {
     title: "マスターガイド",
     avatar: `https://api.dicebear.com/9.x/avataaars/png?seed=spot${spot.id}`,
   };
+
+  // このスポットの20m圏内にいるか（圏外では足あとを残せない）
+  const withinRange = coords
+    ? distanceMeters(coords, { latitude: spot.lat, longitude: spot.lng }) <=
+      NEARBY_RADIUS_M
+    : false;
 
   const startFootprint = () => {
     router.back();
@@ -113,7 +123,10 @@ export default function SpotDetailScreen() {
         <View className="px-5 pb-8 pt-0">
           <Pressable
             onPress={startFootprint}
-            className="h-14 rounded-full bg-purple-500 flex-row items-center justify-center gap-2 active:bg-purple-600"
+            disabled={!withinRange}
+            className={`h-14 rounded-full bg-purple-500 flex-row items-center justify-center gap-2 ${
+              withinRange ? "active:bg-purple-600" : "opacity-40"
+            }`}
           >
             <Footprints size={20} color="white" />
             <Text className="text-base font-bold text-white">足あとを残す</Text>
