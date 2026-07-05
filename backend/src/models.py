@@ -46,6 +46,8 @@ class Stamp(SQLModel, table=True):
 class StampCreate(SQLModel):
     # TODO: 認証実装後は JWT から取得した user_id に差し替える想定
     user_id: str
+    latitude: float
+    longitude: float
 
 
 class StampRead(SQLModel):
