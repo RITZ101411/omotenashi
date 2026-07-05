@@ -15,6 +15,8 @@ from .models import (
     StampRead,
     UserMe,
     UserProfile,
+    Notification,
+    NotificationRead,
 )
 
 # スタンプを許可するスポット中心からの半径(メートル)
@@ -152,4 +154,46 @@ def stamp_spot(
     session.add(stamp)
     session.commit()
     session.refresh(stamp)
+
+    # 投稿主に通知を送る（自分自身のスポットには送らない）
+    if spot.user_id and spot.user_id != user_id:
+        notification = Notification(
+            user_id=spot.user_id,
+            type="stamp",
+            message=f"あなたのスポット「{spot.name}」に足あとが残されました",
+            spot_id=spot_id,
+        )
+        session.add(notification)
+        session.commit()
+
     return stamp
+
+
+@app.get("/notifications", response_model=list[NotificationRead])
+def list_notifications(
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    notifications = session.exec(
+        select(Notification)
+        .where(Notification.user_id == user_id)
+        .order_by(Notification.created_at.desc())
+        .limit(50)
+    ).all()
+    return notifications
+
+
+@app.post("/notifications/{notification_id}/read", status_code=200)
+def mark_notification_read(
+    notification_id: int,
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    notification = session.get(Notification, notification_id)
+    if not notification or notification.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Notification not found")
+
+    notification.is_read = True
+    session.add(notification)
+    session.commit()
+    return {"status": "ok"}
