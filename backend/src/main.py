@@ -1,3 +1,5 @@
+import math
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -5,6 +7,28 @@ from sqlmodel import Session, select
 
 from .database import get_session, create_db_and_tables
 from .models import Spot, SpotCreate, SpotRead, Stamp, StampCreate, StampRead
+
+# スタンプを許可するスポット中心からの半径(メートル)
+# docs/screens.md 「2. メイン画面」の現在地サークル半径(20m)に合わせる
+STAMP_ALLOWED_RADIUS_METERS = 20
+
+EARTH_RADIUS_METERS = 6371000
+
+
+def haversine_distance_meters(
+    lat1: float, lon1: float, lat2: float, lon2: float
+) -> float:
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    d_phi = math.radians(lat2 - lat1)
+    d_lambda = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(d_phi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(d_lambda / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return EARTH_RADIUS_METERS * c
 
 
 class UserMe(BaseModel):
@@ -86,6 +110,12 @@ def stamp_spot(
     ).first()
     if existing:
         raise HTTPException(status_code=409, detail="Already stamped")
+
+    distance = haversine_distance_meters(
+        spot.lat, spot.lng, stamp_data.latitude, stamp_data.longitude
+    )
+    if distance > STAMP_ALLOWED_RADIUS_METERS:
+        raise HTTPException(status_code=400, detail="Out of stamp range")
 
     stamp = Stamp(user_id=user_id, spot_id=spot_id)
     session.add(stamp)
