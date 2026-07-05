@@ -116,7 +116,8 @@
 
 ### API
 - `POST /spots/{id}/stamp`
-  - body: `{ "user_id": "...", "photo_url": "...", "reaction": "美味しかった！" }`
+  - body: `{ "user_id": "...", "latitude": 35.6895, "longitude": 139.6917, "photo_url": "...", "reaction": "美味しかった！" }`
+  - スポットの座標から半径20m以内（`STAMP_ALLOWED_RADIUS_METERS`、現在地サークルと同じ半径）にいない場合は 400/422 エラー
 
 ---
 
