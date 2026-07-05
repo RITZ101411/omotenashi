@@ -79,3 +79,24 @@ class UserMe(SQLModel):
     stamped_count: int
     total_spots: int
     post_count: int
+
+
+class Notification(SQLModel, table=True):
+    __tablename__ = "notifications"
+
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: str = Field(index=True)
+    type: str  # "stamp" | "reaction"
+    message: str
+    spot_id: int = Field(foreign_key="spots.id", ondelete="CASCADE")
+    is_read: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class NotificationRead(SQLModel):
+    id: int
+    type: str
+    message: str
+    spot_id: int
+    is_read: bool
+    created_at: datetime

@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { FloatingFooter } from "../components/FloatingFooter";
 import { AuthProvider, useAuth } from "../providers/AuthProvider";
 
-const HIDE_FOOTER_ROUTES = ["/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth"];
+const HIDE_FOOTER_ROUTES = ["/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth", "/notifications"];
 
 function RootLayoutInner() {
   const pathname = usePathname();
@@ -46,6 +46,7 @@ function RootLayoutInner() {
         <Stack.Screen name="spot/camera" options={{ animation: "slide_from_bottom", animationDuration: 200 }} />
         <Stack.Screen name="spot/reaction" options={{ animation: "slide_from_right" }} />
         <Stack.Screen name="spot/complete" options={{ animation: "none" }} />
+        <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
         <Stack.Screen name="components-demo" />
       </Stack>
 
