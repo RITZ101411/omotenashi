@@ -11,7 +11,7 @@ import { router } from "expo-router";
 import { mockSpots } from "../data/mock-spots";
 import { SpotThumbnail } from "../components/SpotThumbnail";
 import { circleRing } from "../lib/geo";
-import { NEARBY_RADIUS_M } from "../lib/nearby";
+import { NEARBY_RADIUS_M, spotsWithinRadius } from "../lib/nearby";
 import { useUserLocation } from "../hooks/useUserLocation";
 
 const INITIAL_CENTER: [number, number] = [139.6991, 35.5312];
@@ -19,6 +19,12 @@ const INITIAL_ZOOM = 14;
 
 export default function MapScreen() {
   const { coords } = useUserLocation();
+
+  // 範囲内のマーカーを揺らす
+  const nearbySpotIds = useMemo(() => {
+    if (!coords) return new Set<number>();
+    return new Set(spotsWithinRadius(coords, mockSpots).map(({ spot }) => spot.id));
+  }, [coords]);
 
   // 現在地を中心にした20m圏（NEARBY_RADIUS_M）。現在地が動くたびに作り直す。
   const userRadiusCircle = useMemo<GeoJSON.FeatureCollection | null>(() => {
@@ -52,7 +58,11 @@ export default function MapScreen() {
             lngLat={[spot.lng, spot.lat]}
             onPress={() => router.push(`/spot/${spot.id}`)}
           >
-            <SpotThumbnail photo_url={spot.photo_url} name={spot.name} state="normal" />
+            <SpotThumbnail
+              photo_url={spot.photo_url}
+              name={spot.name}
+              state={nearbySpotIds.has(spot.id) ? "in-range" : "normal"}
+            />
           </Marker>
         ))}
 

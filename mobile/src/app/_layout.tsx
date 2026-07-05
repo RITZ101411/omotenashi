@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { FloatingFooter } from "../components/FloatingFooter";
 import { AuthProvider, useAuth } from "../providers/AuthProvider";
 
-const HIDE_FOOTER_ROUTES = ["/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth"];
+const HIDE_FOOTER_ROUTES = ["/post", "/post-detail", "/post-complete", "/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth"];
 
 function RootLayoutInner() {
   const pathname = usePathname();
@@ -38,6 +38,8 @@ function RootLayoutInner() {
         <Stack.Screen name="auth" />
         <Stack.Screen name="index" />
         <Stack.Screen name="post" />
+        <Stack.Screen name="post-detail" options={{ animation: "slide_from_right" }} />
+        <Stack.Screen name="post-complete" />
         <Stack.Screen name="mypage" />
         <Stack.Screen
           name="spot/[id]"
