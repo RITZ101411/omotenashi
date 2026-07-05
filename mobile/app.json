@@ -27,7 +27,8 @@
     "plugins": [
       "expo-router",
       "expo-status-bar",
-      "@maplibre/maplibre-react-native"
+      "@maplibre/maplibre-react-native",
+      ["expo-location", { "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location." }]
     ]
   }
 }

@@ -1,19 +1,51 @@
 import { View, Pressable, Text } from "react-native";
-import { Map, Camera, Marker } from "@maplibre/maplibre-react-native";
+import { useMemo } from "react";
+import {
+  Map,
+  Camera,
+  Marker,
+  GeoJSONSource,
+  Layer,
+} from "@maplibre/maplibre-react-native";
 import { router } from "expo-router";
 import { mockSpots } from "../data/mock-spots";
 import { SpotThumbnail } from "../components/SpotThumbnail";
+import { circleRing } from "../lib/geo";
+import { NEARBY_RADIUS_M } from "../lib/nearby";
+import { useUserLocation } from "../hooks/useUserLocation";
 
 const INITIAL_CENTER: [number, number] = [139.6991, 35.5312];
 const INITIAL_ZOOM = 14;
 
 export default function MapScreen() {
+  const { coords } = useUserLocation();
+
+  // 現在地を中心にした20m圏（NEARBY_RADIUS_M）。現在地が動くたびに作り直す。
+  const userRadiusCircle = useMemo<GeoJSON.FeatureCollection | null>(() => {
+    if (!coords) return null;
+    return {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Polygon",
+            coordinates: [circleRing(coords, NEARBY_RADIUS_M)],
+          },
+        },
+      ],
+    };
+  }, [coords]);
+
   return (
     <View className="flex-1">
       <Map style={{ flex: 1 }} mapStyle={"https://tiles.openfreemap.org/styles/bright"}>
         <Camera
           initialViewState={{ center: INITIAL_CENTER, zoom: INITIAL_ZOOM }}
+          trackUserLocation="default"
         />
+
         {mockSpots.map((spot) => (
           <Marker
             key={spot.id}
@@ -23,6 +55,24 @@ export default function MapScreen() {
             <SpotThumbnail photo_url={spot.photo_url} name={spot.name} state="normal" />
           </Marker>
         ))}
+
+        {/* 現在地まわりの20m圏（紫の外枠のみ） */}
+        {userRadiusCircle && (
+          <GeoJSONSource id="user-radius" data={userRadiusCircle}>
+            <Layer
+              id="user-radius-line"
+              type="line"
+              paint={{ "line-color": "#a855f7", "line-width": 2, "line-opacity": 0.9 }}
+            />
+          </GeoJSONSource>
+        )}
+
+        {/* 現在地（紫のドット） */}
+        {coords && (
+          <Marker lngLat={[coords.longitude, coords.latitude]}>
+            <View className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white shadow" />
+          </Marker>
+        )}
       </Map>
 
       <Pressable
