@@ -1,6 +1,7 @@
-import { View, Text, ScrollView, Image } from "react-native";
-import { Star } from "lucide-react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
+import { Star, LogOut } from "lucide-react-native";
 import { ProgressBar } from "../components/ProgressBar";
+import { supabase } from "../lib/supabase";
 
 const user = {
   name: "地元たろう",
@@ -12,10 +13,30 @@ const user = {
 };
 
 export default function MypageScreen() {
+  async function handleLogout() {
+    Alert.alert("ログアウト", "ログアウトしますか？", [
+      { text: "キャンセル", style: "cancel" },
+      {
+        text: "ログアウト",
+        style: "destructive",
+        onPress: async () => {
+          await supabase.auth.signOut();
+        },
+      },
+    ]);
+  }
+
   return (
     <View className="flex-1 bg-white">
       {/* 固定ヘッダー: プロフィール */}
       <View className="px-5 pt-24 pb-6 items-center">
+        <TouchableOpacity
+          className="absolute top-14 right-5 p-2"
+          onPress={handleLogout}
+        >
+          <LogOut size={22} color="#6b7280" />
+        </TouchableOpacity>
+
         <View className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-100 mb-3">
           <Image
             source={{ uri: "https://api.dicebear.com/9.x/avataaars/png?seed=jimoto" }}

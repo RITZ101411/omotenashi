@@ -1,23 +1,41 @@
-import { View } from "react-native";
-import { Stack, usePathname, useRouter } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
+import { Stack, usePathname, useRouter, Redirect } from "expo-router";
 import "../../global.css";
 import { StatusBar } from "expo-status-bar";
 import { FloatingFooter } from "../components/FloatingFooter";
+import { AuthProvider, useAuth } from "../providers/AuthProvider";
 
-const HIDE_FOOTER_ROUTES = ["/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo"];
+const HIDE_FOOTER_ROUTES = ["/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth"];
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const pathname = usePathname();
   const router = useRouter();
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!session && pathname !== "/auth") {
+    return <Redirect href="/auth" />;
+  }
+
+  if (session && pathname === "/auth") {
+    return <Redirect href="/" />;
+  }
 
   const showFooter = !HIDE_FOOTER_ROUTES.includes(pathname) && !pathname.startsWith("/spot/");
-
   const activeTab = pathname === "/mypage" ? "mypage" : pathname === "/post" ? "post" : "map";
 
   return (
     <View className="flex-1">
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false, animation: "none" }}>
+        <Stack.Screen name="auth" />
         <Stack.Screen name="index" />
         <Stack.Screen name="post" />
         <Stack.Screen name="mypage" />
@@ -42,5 +60,13 @@ export default function RootLayout() {
         />
       )}
     </View>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutInner />
+    </AuthProvider>
   );
 }
