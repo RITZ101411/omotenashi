@@ -21,7 +21,7 @@ from .models import (
 
 # スタンプを許可するスポット中心からの半径(メートル)
 # docs/screens.md 「2. メイン画面」の現在地サークル半径(20m)に合わせる
-STAMP_ALLOWED_RADIUS_METERS = 20
+STAMP_ALLOWED_RADIUS_METERS = 500
 
 EARTH_RADIUS_METERS = 6371000
 
@@ -157,16 +157,43 @@ def stamp_spot(
 
     # 投稿主に通知を送る（自分自身のスポットには送らない）
     if spot.user_id and spot.user_id != user_id:
+        reaction_text = f"「{stamp_data.reaction}」" if stamp_data.reaction else ""
         notification = Notification(
             user_id=spot.user_id,
             type="stamp",
-            message=f"あなたのスポット「{spot.name}」に足あとが残されました",
+            message=f"あなたのスポット「{spot.name}」に足あとが残されました {reaction_text}",
             spot_id=spot_id,
+            photo_url=stamp_data.photo_url,
+            reaction=stamp_data.reaction,
         )
         session.add(notification)
         session.commit()
 
     return stamp
+
+
+@app.get("/users/me/stamps", response_model=list[StampRead])
+def list_my_stamps(
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    stamps = session.exec(
+        select(Stamp).where(Stamp.user_id == user_id)
+    ).all()
+    return stamps
+
+
+@app.delete("/spots/{spot_id}", status_code=204)
+def delete_spot(
+    spot_id: int,
+    user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    spot = session.get(Spot, spot_id)
+    if not spot:
+        raise HTTPException(status_code=404, detail="Spot not found")
+    session.delete(spot)
+    session.commit()
 
 
 @app.get("/notifications", response_model=list[NotificationRead])
