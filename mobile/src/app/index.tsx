@@ -1,5 +1,5 @@
 import { View, Pressable, Text } from "react-native";
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import {
   Map,
   Camera,
@@ -7,24 +7,57 @@ import {
   GeoJSONSource,
   Layer,
 } from "@maplibre/maplibre-react-native";
-import { router } from "expo-router";
-import { mockSpots } from "../data/mock-spots";
+import { router, useFocusEffect } from "expo-router";
 import { SpotThumbnail } from "../components/SpotThumbnail";
 import { circleRing } from "../lib/geo";
 import { NEARBY_RADIUS_M, spotsWithinRadius } from "../lib/nearby";
 import { useUserLocation } from "../hooks/useUserLocation";
+import { useAuth } from "../providers/AuthProvider";
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const INITIAL_CENTER: [number, number] = [139.6991, 35.5312];
 const INITIAL_ZOOM = 14;
 
+type Spot = {
+  id: number;
+  name: string;
+  photo_url: string | null;
+  lat: number;
+  lng: number;
+};
+
 export default function MapScreen() {
   const { coords } = useUserLocation();
+  const { session } = useAuth();
+  const [spots, setSpots] = useState<Spot[]>([]);
+  const [visitedSpotIds, setVisitedSpotIds] = useState<Set<number>>(new Set());
+
+  // スポット一覧 + スタンプ済み取得
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`${API_BASE_URL}/spots`)
+        .then((res) => res.ok ? res.json() : [])
+        .then((data) => setSpots(data))
+        .catch(() => {});
+
+      if (session) {
+        fetch(`${API_BASE_URL}/users/me/stamps`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
+          .then((res) => res.ok ? res.json() : [])
+          .then((stamps: { spot_id: number }[]) => {
+            setVisitedSpotIds(new Set(stamps.map((s) => s.spot_id)));
+          })
+          .catch(() => {});
+      }
+    }, [session])
+  );
 
   // 範囲内のマーカーを揺らす
   const nearbySpotIds = useMemo(() => {
     if (!coords) return new Set<number>();
-    return new Set(spotsWithinRadius(coords, mockSpots).map(({ spot }) => spot.id));
-  }, [coords]);
+    return new Set(spotsWithinRadius(coords, spots).map(({ spot }) => spot.id));
+  }, [coords, spots]);
 
   // 現在地を中心にした20m圏（NEARBY_RADIUS_M）。現在地が動くたびに作り直す。
   const userRadiusCircle = useMemo<GeoJSON.FeatureCollection | null>(() => {
@@ -52,7 +85,7 @@ export default function MapScreen() {
           trackUserLocation="default"
         />
 
-        {mockSpots.map((spot) => (
+        {spots.map((spot) => (
           <Marker
             key={spot.id}
             lngLat={[spot.lng, spot.lat]}
@@ -61,7 +94,7 @@ export default function MapScreen() {
             <SpotThumbnail
               photo_url={spot.photo_url}
               name={spot.name}
-              state={nearbySpotIds.has(spot.id) ? "in-range" : "normal"}
+              state={visitedSpotIds.has(spot.id) ? "visited" : nearbySpotIds.has(spot.id) ? "in-range" : "normal"}
             />
           </Marker>
         ))}
@@ -85,12 +118,6 @@ export default function MapScreen() {
         )}
       </Map>
 
-      <Pressable
-        onPress={() => router.push("/components-demo")}
-        className="absolute top-16 right-5 bg-white rounded-full px-4 py-2 shadow active:bg-gray-100"
-      >
-        <Text className="text-sm font-medium text-gray-600">コンポーネント一覧</Text>
-      </Pressable>
     </View>
   );
 }
