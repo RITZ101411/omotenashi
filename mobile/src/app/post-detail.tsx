@@ -12,9 +12,13 @@ import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { X, Camera as CameraIcon, ImagePlus } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
+import { useAuth } from "../providers/AuthProvider";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 export default function PostDetailScreen() {
   const { lat, lng } = useLocalSearchParams<{ lat: string; lng: string }>();
+  const { session } = useAuth();
 
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -42,19 +46,34 @@ export default function PostDetailScreen() {
     if (!res.canceled && res.assets?.[0]) setPhotoUri(res.assets[0].uri);
   };
 
-  const submit = () => {
-    // TODO: スポットを作成する（バックエンド連携）
-    console.log("create spot", {
-      latitude: Number(lat),
-      longitude: Number(lng),
-      name,
-      recommend,
-      photoUri,
-    });
-    router.replace({
-      pathname: "/post-complete",
-      params: { photo: photoUri ?? "" },
-    });
+  const submit = async () => {
+    if (!session || !name) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/spots`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          name,
+          description: recommend || "裏スポット",
+          photo_url: photoUri,
+          lat: Number(lat),
+          lng: Number(lng),
+        }),
+      });
+
+      if (res.ok) {
+        router.replace({
+          pathname: "/post-complete",
+          params: { photo: photoUri ?? "" },
+        });
+      }
+    } catch (e) {
+      console.error("Failed to create spot:", e);
+    }
   };
 
   return (

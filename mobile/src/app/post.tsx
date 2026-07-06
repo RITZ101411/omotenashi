@@ -61,12 +61,10 @@ export default function PostScreen() {
 
       {/* 画面中央に固定したピン。先端を画面中央に合わせている（getCenter の座標と一致） */}
       <View className="absolute inset-0 items-center justify-center" pointerEvents="none">
-        <MapPin
-          size={44}
-          color="#7c3aed"
-          fill="#7c3aed"
-          style={{ transform: [{ translateY: -22 }] }}
-        />
+        <View style={{ transform: [{ translateY: -30 }] }} className="items-center">
+          <MapPin size={30} color="#7c3aed" fill="#7c3aed" />
+          <View className="w-2 h-2 rounded-full bg-purple-600 -mt-1" />
+        </View>
       </View>
 
       {/* 左上の閉じるボタン（白背景・黒文字・黒枠） */}
