@@ -7,23 +7,48 @@ import {
   Animated,
   PanResponder,
 } from "react-native";
-import { useRef } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { useRef, useState, useCallback } from "react";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { Footprints } from "lucide-react-native";
-import { mockSpots } from "../../data/mock-spots";
 import { useUserLocation } from "../../hooks/useUserLocation";
 import { distanceMeters } from "../../lib/geo";
 import { NEARBY_RADIUS_M } from "../../lib/nearby";
+import { useAuth } from "../../providers/AuthProvider";
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000";
 const DISMISS_DISTANCE = 120;
 const DISMISS_VELOCITY = 0.8;
 
 export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const spot = mockSpots.find((s) => String(s.id) === id);
+  const { session } = useAuth();
+  const [spot, setSpot] = useState<any>(null);
+  const [stamped, setStamped] = useState(false);
 
   const { coords } = useUserLocation();
   const translateY = useRef(new Animated.Value(0)).current;
+
+  // スポット詳細を取得
+  useFocusEffect(
+    useCallback(() => {
+      if (!id) return;
+      fetch(`${API_BASE_URL}/spots/${id}`)
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => setSpot(data))
+        .catch(() => {});
+
+      if (session) {
+        fetch(`${API_BASE_URL}/users/me/stamps`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
+          .then((res) => res.ok ? res.json() : [])
+          .then((stamps: { spot_id: number }[]) => {
+            setStamped(stamps.some((s) => s.spot_id === Number(id)));
+          })
+          .catch(() => {});
+      }
+    }, [session, id])
+  );
 
   const panResponder = useRef(
     PanResponder.create({
@@ -67,8 +92,9 @@ export default function SpotDetailScreen() {
     : false;
 
   const startFootprint = () => {
+    setStamped(true);
     router.back();
-    router.push("/spot/camera");
+    router.push({ pathname: "/spot/camera", params: { spotId: id } });
   };
 
   return (
@@ -121,16 +147,23 @@ export default function SpotDetailScreen() {
         </View>
 
         <View className="px-5 pb-8 pt-0">
-          <Pressable
-            onPress={startFootprint}
-            disabled={!withinRange}
-            className={`h-14 rounded-full bg-purple-500 flex-row items-center justify-center gap-2 ${
-              withinRange ? "active:bg-purple-600" : "opacity-40"
-            }`}
-          >
-            <Footprints size={20} color="white" />
-            <Text className="text-base font-bold text-white">足あとを残す</Text>
-          </Pressable>
+          {stamped ? (
+            <View className="h-14 rounded-full bg-gray-200 flex-row items-center justify-center gap-2">
+              <Footprints size={20} color="#6b7280" />
+              <Text className="text-base font-bold text-gray-500">足あと済み</Text>
+            </View>
+          ) : (
+            <Pressable
+              onPress={startFootprint}
+              disabled={!withinRange}
+              className={`h-14 rounded-full bg-purple-500 flex-row items-center justify-center gap-2 ${
+                withinRange ? "active:bg-purple-600" : "opacity-40"
+              }`}
+            >
+              <Footprints size={20} color="white" />
+              <Text className="text-base font-bold text-white">足あとを残す</Text>
+            </Pressable>
+          )}
         </View>
       </Animated.View>
     </View>

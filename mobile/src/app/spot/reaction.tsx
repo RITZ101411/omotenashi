@@ -4,17 +4,45 @@ import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { ReactionPill } from "../../components/ReactionPill";
 import { reactions } from "../../data/mock-spots";
+import { useAuth } from "../../providers/AuthProvider";
+import { useUserLocation } from "../../hooks/useUserLocation";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 export default function ReactionScreen() {
-  const { photoUri } = useLocalSearchParams<{ photoUri: string }>();
+  const { photoUri, spotId } = useLocalSearchParams<{ photoUri: string; spotId: string }>();
+  const { session } = useAuth();
+  const { coords } = useUserLocation();
   const [selected, setSelected] = useState<number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (selected === null || !session || !coords) return;
+    setSubmitting(true);
+
+    try {
+      await fetch(`${API_BASE_URL}/spots/${spotId}/stamp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          photo_url: photoUri || null,
+          reaction: reactions[selected],
+        }),
+      });
+    } catch (e) {
+      console.error("Stamp failed:", e);
+    }
+
     router.push({
       pathname: "/spot/complete",
       params: {
         photoUri,
-        reaction: selected !== null ? reactions[selected] : "",
+        reaction: reactions[selected],
       },
     });
   };
@@ -63,12 +91,12 @@ export default function ReactionScreen() {
         <Pressable
           onPress={handleConfirm}
           className={`h-14 rounded-full items-center justify-center ${
-            selected !== null ? "bg-purple-500" : "bg-gray-200"
+            selected !== null && !submitting ? "bg-purple-500" : "bg-gray-200"
           }`}
-          disabled={selected === null}
+          disabled={selected === null || submitting}
         >
-          <Text className={`text-base font-bold ${selected !== null ? "text-white" : "text-gray-400"}`}>
-            確定する
+          <Text className={`text-base font-bold ${selected !== null && !submitting ? "text-white" : "text-gray-400"}`}>
+            {submitting ? "送信中..." : "確定する"}
           </Text>
         </Pressable>
         <Text className="text-xs text-gray-400 text-center mt-2">

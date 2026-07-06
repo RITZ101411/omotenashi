@@ -1,11 +1,12 @@
 import { View, Text, Pressable, Image } from "react-native";
 import { useState, useRef } from "react";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { X } from "lucide-react-native";
 import { ShutterButton } from "../../components/ShutterButton";
 
 export default function CameraScreen() {
+  const { spotId } = useLocalSearchParams<{ spotId: string }>();
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
   const [capturing, setCapturing] = useState(false);
@@ -33,7 +34,7 @@ export default function CameraScreen() {
     if (photoUri) {
       router.push({
         pathname: "/spot/reaction",
-        params: { photoUri },
+        params: { photoUri, spotId },
       });
     }
   };
