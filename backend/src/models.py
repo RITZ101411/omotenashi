@@ -46,6 +46,8 @@ class Stamp(SQLModel, table=True):
 class StampCreate(SQLModel):
     latitude: float
     longitude: float
+    photo_url: str | None = None
+    reaction: str | None = None
 
 
 class StampRead(SQLModel):
@@ -89,6 +91,8 @@ class Notification(SQLModel, table=True):
     type: str  # "stamp" | "reaction"
     message: str
     spot_id: int = Field(foreign_key="spots.id", ondelete="CASCADE")
+    photo_url: str | None = None
+    reaction: str | None = None
     is_read: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -98,5 +102,7 @@ class NotificationRead(SQLModel):
     type: str
     message: str
     spot_id: int
+    photo_url: str | None = None
+    reaction: str | None = None
     is_read: bool
     created_at: datetime
