@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { FloatingFooter } from "../components/FloatingFooter";
 import { AuthProvider, useAuth } from "../providers/AuthProvider";
 
-const HIDE_FOOTER_ROUTES = ["/post", "/post-detail", "/post-complete", "/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth", "/notifications"];
+const HIDE_FOOTER_ROUTES = ["/post", "/post-detail", "/post-complete", "/spot/camera", "/spot/reaction", "/spot/complete", "/components-demo", "/auth", "/notifications", "/notification-detail"];
 
 function RootLayoutInner() {
   const pathname = usePathname();

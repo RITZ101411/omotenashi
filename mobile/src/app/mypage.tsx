@@ -29,6 +29,7 @@ export default function MypageScreen() {
   const { session } = useAuth();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -49,6 +50,15 @@ export default function MypageScreen() {
       if (res.ok) {
         const data = await res.json();
         setUser(data);
+      }
+
+      // 未読通知数
+      const nRes = await fetch(`${API_BASE_URL}/notifications`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (nRes.ok) {
+        const notifications = await nRes.json();
+        setUnreadCount(notifications.filter((n: any) => !n.is_read).length);
       }
     } catch (e) {
       console.error("Failed to fetch user:", e);
@@ -92,6 +102,11 @@ export default function MypageScreen() {
           onPress={() => router.push("/notifications")}
         >
           <Bell size={22} color="#6b7280" />
+          {unreadCount > 0 && (
+            <View className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full items-center justify-center">
+              <Text className="text-[10px] text-white font-bold">{unreadCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity

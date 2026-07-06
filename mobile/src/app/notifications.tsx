@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 import { useFocusEffect, router } from "expo-router";
 import { ArrowLeft, Footprints, MessageCircle } from "lucide-react-native";
@@ -11,6 +11,8 @@ type Notification = {
   type: "stamp" | "reaction";
   message: string;
   spot_id: number;
+  photo_url: string | null;
+  reaction: string | null;
   is_read: boolean;
   created_at: string;
 };
@@ -72,18 +74,42 @@ export default function NotificationsScreen() {
   function renderItem({ item }: { item: Notification }) {
     return (
       <TouchableOpacity
-        className={`flex-row items-center gap-3 px-5 py-4 border-b border-gray-100 ${!item.is_read ? "bg-purple-50" : ""}`}
-        onPress={() => router.push(`/spot/${item.spot_id}`)}
+        className={`px-5 py-4 border-b border-gray-100 ${!item.is_read ? "bg-purple-50" : ""}`}
+        onPress={() => router.push({
+          pathname: "/notification-detail",
+          params: {
+            message: item.message,
+            photo_url: item.photo_url || "",
+            reaction: item.reaction || "",
+            spot_id: String(item.spot_id),
+            created_at: item.created_at,
+          },
+        })}
         activeOpacity={0.7}
       >
-        <View className="w-10 h-10 bg-purple-100 rounded-full items-center justify-center">
-          {getIcon(item.type)}
+        <View className="flex-row items-center gap-3">
+          <View className="w-10 h-10 bg-purple-100 rounded-full items-center justify-center">
+            {getIcon(item.type)}
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm text-gray-900 font-medium">{item.message}</Text>
+            {item.reaction && (
+              <View className="bg-purple-100 rounded-full px-2.5 py-0.5 mt-1 self-start">
+                <Text className="text-xs text-purple-700 font-bold">{item.reaction}</Text>
+              </View>
+            )}
+            <Text className="text-xs text-gray-400 mt-1">{timeAgo(item.created_at)}</Text>
+          </View>
+          {!item.is_read && <View className="w-2 h-2 bg-purple-500 rounded-full" />}
         </View>
-        <View className="flex-1">
-          <Text className="text-sm text-gray-900 font-medium">{item.message}</Text>
-          <Text className="text-xs text-gray-400 mt-1">{timeAgo(item.created_at)}</Text>
-        </View>
-        {!item.is_read && <View className="w-2 h-2 bg-purple-500 rounded-full" />}
+        {item.photo_url && (
+          <View className="mt-3 ml-13">
+            <Image
+              source={{ uri: item.photo_url }}
+              className="w-32 h-32 rounded-2xl bg-gray-100"
+            />
+          </View>
+        )}
       </TouchableOpacity>
     );
   }
